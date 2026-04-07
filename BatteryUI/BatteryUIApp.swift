@@ -1,17 +1,23 @@
-//
-//  BatteryUIApp.swift
-//  BatteryUI
-//
-//  Created by Raj Shah on 2026-04-06.
-//
-
 import SwiftUI
 
 @main
 struct BatteryUIApp: App {
+    @State private var batteryManager = BatteryManager()
+
     var body: some Scene {
-        WindowGroup {
-            ContentView()
+        MenuBarExtra {
+            Text("Battery: \(batteryManager.percentage)%")
+            Text(batteryManager.isCharging ? "Charging" : "On Battery")
+            Divider()
+            Button("Quit BatteryUI") {
+                NSApplication.shared.terminate(nil)
+            }
+            .keyboardShortcut("q")
+        } label: {
+            BatteryIconView(
+                percentage: batteryManager.percentage,
+                isCharging: batteryManager.isCharging
+            )
         }
     }
 }
