@@ -20,7 +20,8 @@ struct BatteryUIApp: App {
         } label: {
             Image(nsImage: BatteryIconView.menuBarImage(
                 percentage: batteryManager.percentage,
-                isPluggedIn: batteryManager.isPluggedIn
+                isCharging: batteryManager.isCharging,
+                isLowPowerMode: batteryManager.isLowPowerMode
             ))
         }
     }

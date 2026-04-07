@@ -68,7 +68,7 @@ struct BatteryIconView: View {
 
     // MARK: - NSImage for MenuBarExtra label
 
-    static func menuBarImage(percentage: Int, isPluggedIn: Bool) -> NSImage {
+    static func menuBarImage(percentage: Int, isCharging: Bool, isLowPowerMode: Bool) -> NSImage {
         let clamped = max(0, min(100, percentage))
 
         let bodyW: CGFloat = 32
@@ -84,7 +84,16 @@ struct BatteryIconView: View {
 
         let image = NSImage(size: NSSize(width: totalW, height: bodyH), flipped: false) { _ in
             let chrome = NSColor.white.withAlphaComponent(0.85)
-            let fillColor: NSColor = clamped <= 20 ? .systemRed : .systemGreen
+            let fillColor: NSColor
+            if isLowPowerMode {
+                fillColor = .systemYellow
+            } else if clamped <= 20 {
+                fillColor = .systemRed
+            } else if isCharging {
+                fillColor = .systemGreen
+            } else {
+                fillColor = .white.withAlphaComponent(0.3)
+            }
 
             // Battery body outline
             let bodyRect = NSRect(x: stroke / 2, y: stroke / 2,
