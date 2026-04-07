@@ -26,8 +26,6 @@ struct BatteryIconView: View {
     private var batteryBody: some View {
         ZStack(alignment: .leading) {
             RoundedRectangle(cornerRadius: bodyRadius)
-                .fill(Color.white.opacity(0.95))
-            RoundedRectangle(cornerRadius: bodyRadius)
                 .strokeBorder(.primary.opacity(0.55), lineWidth: lineWidth)
 
             let fillFraction = CGFloat(clamped) / 100
@@ -66,7 +64,7 @@ struct BatteryIconView: View {
         if isCharging { return .green.opacity(0.45) }
         if clamped <= 10 { return .red.opacity(0.5) }
         if clamped <= 20 { return .orange.opacity(0.45) }
-        return .primary.opacity(0.15)
+        return Color.white.opacity(0.96)
     }
 
     // MARK: - NSImage for MenuBarExtra label
@@ -87,7 +85,6 @@ struct BatteryIconView: View {
 
         let image = NSImage(size: NSSize(width: totalW, height: bodyH), flipped: false) { _ in
             let border = NSColor(white: 0.62, alpha: 0.95)
-            let background = NSColor(white: 0.98, alpha: 0.96)
             let fillColor: NSColor
             if isLowPowerMode {
                 fillColor = .systemYellow
@@ -96,7 +93,7 @@ struct BatteryIconView: View {
             } else if isPluggedIn {
                 fillColor = .systemGreen
             } else {
-                fillColor = NSColor(white: 0.82, alpha: 0.95)
+                fillColor = NSColor(white: 0.98, alpha: 0.96)
             }
 
             // Battery body outline
@@ -104,8 +101,6 @@ struct BatteryIconView: View {
                                   width: bodyW - stroke, height: bodyH - stroke)
             let bodyPath = NSBezierPath(roundedRect: bodyRect, xRadius: bodyR, yRadius: bodyR)
             bodyPath.lineWidth = stroke
-            background.setFill()
-            bodyPath.fill()
             border.setStroke()
             bodyPath.stroke()
 
