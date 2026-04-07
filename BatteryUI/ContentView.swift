@@ -5,13 +5,13 @@ struct BatteryIconView: View {
     let percentage: Int
     let isCharging: Bool
 
-    private let bodyWidth: CGFloat = 32
-    private let bodyHeight: CGFloat = 15
-    private let bodyRadius: CGFloat = 3.5
+    private let bodyWidth: CGFloat = 36
+    private let bodyHeight: CGFloat = 17
+    private let bodyRadius: CGFloat = 4
     private let termWidth: CGFloat = 3
-    private let termHeight: CGFloat = 7
+    private let termHeight: CGFloat = 8
     private let termRadius: CGFloat = 1.5
-    private let lineWidth: CGFloat = 1.5
+    private let lineWidth: CGFloat = 1.4
     private let inset: CGFloat = 2.0
 
     private var clamped: Int { max(0, min(100, percentage)) }
@@ -25,6 +25,8 @@ struct BatteryIconView: View {
 
     private var batteryBody: some View {
         ZStack(alignment: .leading) {
+            RoundedRectangle(cornerRadius: bodyRadius)
+                .fill(Color.white.opacity(0.95))
             RoundedRectangle(cornerRadius: bodyRadius)
                 .strokeBorder(.primary.opacity(0.55), lineWidth: lineWidth)
 
@@ -40,8 +42,9 @@ struct BatteryIconView: View {
             }
 
             Text("\(clamped)")
-                .font(.system(size: 9.5, weight: .bold, design: .rounded))
+                .font(.system(size: 11, weight: .bold, design: .rounded))
                 .monospacedDigit()
+                .foregroundStyle(.black.opacity(0.75))
                 .frame(maxWidth: .infinity)
         }
         .frame(width: bodyWidth, height: bodyHeight)
@@ -71,19 +74,20 @@ struct BatteryIconView: View {
     static func menuBarImage(percentage: Int, isPluggedIn: Bool, isLowPowerMode: Bool) -> NSImage {
         let clamped = max(0, min(100, percentage))
 
-        let bodyW: CGFloat = 32
-        let bodyH: CGFloat = 15
-        let bodyR: CGFloat = 3.5
+        let bodyW: CGFloat = 36
+        let bodyH: CGFloat = 17
+        let bodyR: CGFloat = 4
         let termW: CGFloat = 3
-        let termH: CGFloat = 7
+        let termH: CGFloat = 8
         let termR: CGFloat = 1.5
-        let stroke: CGFloat = 1.5
+        let stroke: CGFloat = 1.4
         let pad: CGFloat = 2.0
 
         let totalW = bodyW + termW
 
         let image = NSImage(size: NSSize(width: totalW, height: bodyH), flipped: false) { _ in
-            let chrome = NSColor.white.withAlphaComponent(0.85)
+            let border = NSColor(white: 0.62, alpha: 0.95)
+            let background = NSColor(white: 0.98, alpha: 0.96)
             let fillColor: NSColor
             if isLowPowerMode {
                 fillColor = .systemYellow
@@ -92,7 +96,7 @@ struct BatteryIconView: View {
             } else if isPluggedIn {
                 fillColor = .systemGreen
             } else {
-                fillColor = .white.withAlphaComponent(0.3)
+                fillColor = NSColor(white: 0.82, alpha: 0.95)
             }
 
             // Battery body outline
@@ -100,7 +104,9 @@ struct BatteryIconView: View {
                                   width: bodyW - stroke, height: bodyH - stroke)
             let bodyPath = NSBezierPath(roundedRect: bodyRect, xRadius: bodyR, yRadius: bodyR)
             bodyPath.lineWidth = stroke
-            chrome.setStroke()
+            background.setFill()
+            bodyPath.fill()
+            border.setStroke()
             bodyPath.stroke()
 
             // Fill level (always green)
@@ -121,21 +127,21 @@ struct BatteryIconView: View {
             let termY = (bodyH - termH) / 2
             let termRect = NSRect(x: termX, y: termY, width: termW, height: termH)
             let termPath = NSBezierPath(roundedRect: termRect, xRadius: termR, yRadius: termR)
-            chrome.setFill()
+            border.setFill()
             termPath.fill()
 
             // Percentage text
-            let baseDesc = NSFont.systemFont(ofSize: 9.5, weight: .bold).fontDescriptor
+            let baseDesc = NSFont.systemFont(ofSize: 11, weight: .bold).fontDescriptor
             let roundedDesc = baseDesc.withDesign(.rounded) ?? baseDesc
-            let font = NSFont(descriptor: roundedDesc, size: 9.5)
-                ?? NSFont.boldSystemFont(ofSize: 9.5)
+            let font = NSFont(descriptor: roundedDesc, size: 11)
+                ?? NSFont.systemFont(ofSize: 11, weight: .bold)
 
             let style = NSMutableParagraphStyle()
             style.alignment = .center
 
             let attrs: [NSAttributedString.Key: Any] = [
                 .font: font,
-                .foregroundColor: isLowPowerMode ? NSColor.black : NSColor.white,
+                .foregroundColor: NSColor(white: 0.35, alpha: 1.0),
                 .paragraphStyle: style,
             ]
             let text = "\(clamped)" as NSString
