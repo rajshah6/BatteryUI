@@ -4,4 +4,3 @@ TODO:
 - toggle low power mode on/off
 - same menu as native battery
 - charge lightning icon
-- better low power mode text colour
