@@ -7,12 +7,7 @@ struct BatteryUIApp: App {
 
     var body: some Scene {
         MenuBarExtra {
-            Text("Battery: \(batteryManager.percentage)%")
-            if batteryManager.isPluggedIn {
-                Text(batteryManager.isCharging ? "Charging" : "Charged")
-            } else {
-                Text("On Battery")
-            }
+            Text("Power Source: \(batteryManager.isPluggedIn ? "Power Adapter" : "Battery")")
             Divider()
             Button("Battery Settings…") {
                 Self.openSystemBatterySettings()
