@@ -135,7 +135,7 @@ struct BatteryIconView: View {
 
             let attrs: [NSAttributedString.Key: Any] = [
                 .font: font,
-                .foregroundColor: NSColor.white,
+                .foregroundColor: isLowPowerMode ? NSColor.black : NSColor.white,
                 .paragraphStyle: style,
             ]
             let text = "\(clamped)" as NSString
