@@ -7,7 +7,11 @@ struct BatteryUIApp: App {
     var body: some Scene {
         MenuBarExtra {
             Text("Battery: \(batteryManager.percentage)%")
-            Text(batteryManager.isCharging ? "Charging" : "On Battery")
+            if batteryManager.isPluggedIn {
+                Text(batteryManager.isCharging ? "Charging" : "Charged")
+            } else {
+                Text("On Battery")
+            }
             Divider()
             Button("Quit BatteryUI") {
                 NSApplication.shared.terminate(nil)
@@ -16,7 +20,7 @@ struct BatteryUIApp: App {
         } label: {
             Image(nsImage: BatteryIconView.menuBarImage(
                 percentage: batteryManager.percentage,
-                isCharging: batteryManager.isCharging
+                isPluggedIn: batteryManager.isPluggedIn
             ))
         }
     }

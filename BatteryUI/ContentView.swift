@@ -68,7 +68,7 @@ struct BatteryIconView: View {
 
     // MARK: - NSImage for MenuBarExtra label
 
-    static func menuBarImage(percentage: Int, isCharging: Bool) -> NSImage {
+    static func menuBarImage(percentage: Int, isPluggedIn: Bool) -> NSImage {
         let clamped = max(0, min(100, percentage))
 
         let bodyW: CGFloat = 32
@@ -81,18 +81,20 @@ struct BatteryIconView: View {
         let pad: CGFloat = 2.0
 
         let totalW = bodyW + termW
-        let black = NSColor.black
 
         let image = NSImage(size: NSSize(width: totalW, height: bodyH), flipped: false) { _ in
+            let chrome = NSColor.white.withAlphaComponent(0.85)
+            let fillColor: NSColor = clamped <= 20 ? .systemRed : .systemGreen
+
             // Battery body outline
             let bodyRect = NSRect(x: stroke / 2, y: stroke / 2,
                                   width: bodyW - stroke, height: bodyH - stroke)
             let bodyPath = NSBezierPath(roundedRect: bodyRect, xRadius: bodyR, yRadius: bodyR)
             bodyPath.lineWidth = stroke
-            black.withAlphaComponent(0.85).setStroke()
+            chrome.setStroke()
             bodyPath.stroke()
 
-            // Fill level
+            // Fill level (always green)
             let fillMaxW = bodyW - pad * 2 - stroke
             let fillW = fillMaxW * CGFloat(clamped) / 100
             if fillW > 0 {
@@ -101,7 +103,7 @@ struct BatteryIconView: View {
                 let fillPath = NSBezierPath(roundedRect: fillRect,
                                             xRadius: max(0, bodyR - 1),
                                             yRadius: max(0, bodyR - 1))
-                black.withAlphaComponent(0.25).setFill()
+                fillColor.setFill()
                 fillPath.fill()
             }
 
@@ -110,7 +112,7 @@ struct BatteryIconView: View {
             let termY = (bodyH - termH) / 2
             let termRect = NSRect(x: termX, y: termY, width: termW, height: termH)
             let termPath = NSBezierPath(roundedRect: termRect, xRadius: termR, yRadius: termR)
-            black.withAlphaComponent(0.85).setFill()
+            chrome.setFill()
             termPath.fill()
 
             // Percentage text
@@ -124,7 +126,7 @@ struct BatteryIconView: View {
 
             let attrs: [NSAttributedString.Key: Any] = [
                 .font: font,
-                .foregroundColor: black,
+                .foregroundColor: NSColor.white,
                 .paragraphStyle: style,
             ]
             let text = "\(clamped)" as NSString
@@ -138,7 +140,7 @@ struct BatteryIconView: View {
             return true
         }
 
-        image.isTemplate = true
+        image.isTemplate = false
         return image
     }
 }
