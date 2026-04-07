@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 
 struct BatteryIconView: View {
     let percentage: Int
@@ -63,6 +64,82 @@ struct BatteryIconView: View {
         if clamped <= 10 { return .red.opacity(0.5) }
         if clamped <= 20 { return .orange.opacity(0.45) }
         return .primary.opacity(0.15)
+    }
+
+    // MARK: - NSImage for MenuBarExtra label
+
+    static func menuBarImage(percentage: Int, isCharging: Bool) -> NSImage {
+        let clamped = max(0, min(100, percentage))
+
+        let bodyW: CGFloat = 32
+        let bodyH: CGFloat = 15
+        let bodyR: CGFloat = 3.5
+        let termW: CGFloat = 3
+        let termH: CGFloat = 7
+        let termR: CGFloat = 1.5
+        let stroke: CGFloat = 1.5
+        let pad: CGFloat = 2.0
+
+        let totalW = bodyW + termW
+        let black = NSColor.black
+
+        let image = NSImage(size: NSSize(width: totalW, height: bodyH), flipped: false) { _ in
+            // Battery body outline
+            let bodyRect = NSRect(x: stroke / 2, y: stroke / 2,
+                                  width: bodyW - stroke, height: bodyH - stroke)
+            let bodyPath = NSBezierPath(roundedRect: bodyRect, xRadius: bodyR, yRadius: bodyR)
+            bodyPath.lineWidth = stroke
+            black.withAlphaComponent(0.85).setStroke()
+            bodyPath.stroke()
+
+            // Fill level
+            let fillMaxW = bodyW - pad * 2 - stroke
+            let fillW = fillMaxW * CGFloat(clamped) / 100
+            if fillW > 0 {
+                let fillRect = NSRect(x: pad + stroke / 2, y: pad + stroke / 2,
+                                      width: fillW, height: bodyH - pad * 2 - stroke)
+                let fillPath = NSBezierPath(roundedRect: fillRect,
+                                            xRadius: max(0, bodyR - 1),
+                                            yRadius: max(0, bodyR - 1))
+                black.withAlphaComponent(0.25).setFill()
+                fillPath.fill()
+            }
+
+            // Terminal nub
+            let termX = bodyW - stroke / 2
+            let termY = (bodyH - termH) / 2
+            let termRect = NSRect(x: termX, y: termY, width: termW, height: termH)
+            let termPath = NSBezierPath(roundedRect: termRect, xRadius: termR, yRadius: termR)
+            black.withAlphaComponent(0.85).setFill()
+            termPath.fill()
+
+            // Percentage text
+            let baseDesc = NSFont.systemFont(ofSize: 9.5, weight: .bold).fontDescriptor
+            let roundedDesc = baseDesc.withDesign(.rounded) ?? baseDesc
+            let font = NSFont(descriptor: roundedDesc, size: 9.5)
+                ?? NSFont.boldSystemFont(ofSize: 9.5)
+
+            let style = NSMutableParagraphStyle()
+            style.alignment = .center
+
+            let attrs: [NSAttributedString.Key: Any] = [
+                .font: font,
+                .foregroundColor: black,
+                .paragraphStyle: style,
+            ]
+            let text = "\(clamped)" as NSString
+            let textSize = text.size(withAttributes: attrs)
+            let textRect = NSRect(x: 0,
+                                  y: (bodyH - textSize.height) / 2,
+                                  width: bodyW,
+                                  height: textSize.height)
+            text.draw(in: textRect, withAttributes: attrs)
+
+            return true
+        }
+
+        image.isTemplate = true
+        return image
     }
 }
 

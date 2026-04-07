@@ -14,10 +14,10 @@ struct BatteryUIApp: App {
             }
             .keyboardShortcut("q")
         } label: {
-            BatteryIconView(
+            Image(nsImage: BatteryIconView.menuBarImage(
                 percentage: batteryManager.percentage,
                 isCharging: batteryManager.isCharging
-            )
+            ))
         }
     }
 }
